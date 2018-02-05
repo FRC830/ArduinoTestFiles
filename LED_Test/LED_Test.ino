@@ -26,6 +26,34 @@
 #include <platforms.h>
 #include <power_mgt.h>
 
+#include <bitswap.h>
+#include <chipsets.h>
+#include <color.h>
+#include <colorpalettes.h>
+#include <colorutils.h>
+#include <controller.h>
+#include <cpp_compat.h>
+#include <dmx.h>
+#include <FastLED.h>
+#include <fastled_config.h>
+#include <fastled_delay.h>
+#include <fastled_progmem.h>
+#include <fastpin.h>
+#include <fastspi.h>
+#include <fastspi_bitbang.h>
+#include <fastspi_dma.h>
+#include <fastspi_nop.h>
+#include <fastspi_ref.h>
+#include <fastspi_types.h>
+#include <hsv2rgb.h>
+#include <led_sysdefs.h>
+#include <lib8tion.h>
+#include <noise.h>
+#include <pixelset.h>
+#include <pixeltypes.h>
+#include <platforms.h>
+#include <power_mgt.h>
+
 // Use if you want to force the software SPI subsystem to be used for some reason (generally, you don't)
 // #define FASTLED_FORCE_SOFTWARE_SPI
 // Use if you want to force non-accelerated pin access (hint: you really don't, it breaks lots of things)
@@ -109,31 +137,20 @@ void lightUP(int start) {
 
 #define PI 3.14159265
 #include <math.h>
-void loop() {
-   // Move a single white led
-   //vector<vector<int>> lights;
-   //lights.push_back(vector<int>(
-   
-   for(int i = 0; i < 150; i++) {
-     float input = 1.7*i; 
+
+void rainbowSeries(int ledNumbers) {
+   for(int i = 0; i < ledNumbers; i++) {
+     float input = (255/ledNumbers)*i; 
      hsv2rgb_rainbow(CHSV(input,200,200), leds[(i+10)%150]);
-     // Turn our current led on to white, then show the leds
-      //leds[i%150] = CRGB(0,sin((PI*i)/255,0);
-      //leds[(i+1)%150] = CRGB(0,0,0);
-      //leds[(i+2)%150] = CRGB(255,0,0);
-      //leds[149-i] = CRGB(0,255,0);
-
-      // Show the leds (only one of which is set to white, from above)
       FastLED.show();
-
-      // Wait a little bit
       delay(10);
-
-      // Turn our current led back to black for the next loop around
       leds[i] = CRGB( 0, 0, 0);
 
       Serial.print("LED #: ");
       Serial.print(i);
       Serial.print("\n");
    }
+}
+void loop() {
+   rainbowSeries(150);
 }
