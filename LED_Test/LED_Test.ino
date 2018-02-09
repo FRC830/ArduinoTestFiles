@@ -199,6 +199,18 @@ void drawString(int x, int y, const char * message, CRGB color, bool doubleScale
   }
 }
 
+void scrollMessage(int y, const char *message, CRGB color, bool doubleScale = false) {
+  Serial.print(-4*(int)strlen(message));
+  
+  for (int x = 22; x > (-4 * (int)strlen(message)); x--) {
+    Serial.print(x);
+    Serial.print('\n');
+    drawString(x, y, message, color, doubleScale);
+    FastLED.show();
+    delay(100);
+  }
+}
+
 
 
 
@@ -229,7 +241,7 @@ void loop() {
      color = CRGB(0,0,255);
    }
  
-   drawString(0,0,"830", color, true);
+   scrollMessage(0,"830 GO RATPACK!", color);
    //drawString(0, 7, "BOTT", color);
    Serial.print("something");
 

@@ -36,10 +36,11 @@ s='''
 111001001001001 7
 111101111101111 8
 111101111001111 9
+010010010000010 !
 '''
 
+print ('#include "font.h"')
 print('')
-
 print('unsigned char_to_index(char c) {')
 print('  switch(c) {')
 i = 0
@@ -50,7 +51,7 @@ for line in s.split('\n'):
         i += 1
 print('    default: return 0; break;\n  }\n}')
 
-print('bool font[][5][3] = {')
+print('const bool font[][5][3] PROGMEM = {')
 for line in s.split('\n'):
     if line:
         raw, letter = line.split(' ')

@@ -1,4 +1,5 @@
 #include "font.h"
+
 unsigned char_to_index(char c) {
   switch(c) {
     case '.': return 0; break;
@@ -38,10 +39,11 @@ unsigned char_to_index(char c) {
     case '7': return 34; break;
     case '8': return 35; break;
     case '9': return 36; break;
+    case '!': return 37; break;
     default: return 0; break;
   }
 }
-const bool font[][5][3] PROGMEM= {
+const bool font[][5][3] PROGMEM = {
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // .
   {0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1}, // A
   {1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0}, // B
@@ -79,6 +81,7 @@ const bool font[][5][3] PROGMEM= {
   {1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1}, // 7
   {1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1}, // 8
   {1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}, // 9
+  {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0}, // !
 };
 /*
 .:
@@ -340,4 +343,12 @@ XXX
   X
 XXX
  
+!:
+ X 
+ X 
+ X 
+   
+ X 
+ 
 */
+
