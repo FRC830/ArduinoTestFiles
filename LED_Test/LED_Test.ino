@@ -60,6 +60,8 @@
 // #define FASTLED_FORCE_SOFTWARE_SPI
 // #define FASTLED_FORCE_SOFTWARE_PINS
 #include "FastLED.h"
+#include "font.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -68,7 +70,7 @@
 // 
 
 // How many leds are in the strip?
-#define NUM_LEDS 150
+#define NUM_LEDS 299
 
 // Data pin that led data will be written out over
 #define DATA_PIN 3
@@ -83,8 +85,6 @@ CRGB leds[NUM_LEDS];
 void setup() {
 	// sanity check delay - allows reprogramming if accidently blowing power w/leds
        Serial.begin(9600);
-       delay(2000);
-
       // Uncomment one of the following lines for your leds arrangement.
       // FastLED.addLeds<TM1803, DATA_PIN, RGB>(leds, NUM_LEDS);
       // FastLED.addLeds<TM1804, DATA_PIN, RGB>(leds, NUM_LEDS);
@@ -135,6 +135,73 @@ void lightUP(int start) {
   
 }
 
+
+void drawPixel(int x, int y, CRGB color, bool doubleScale = false) {
+  if (doubleScale) {
+    drawPixel(2*x, 2*y, color);
+    drawPixel(2*x+1, 2*y, color);
+    drawPixel(2*x, 2*y+1, color);
+    drawPixel(2*x+1, 2*y+1, color);
+    return;
+  }
+  if ( x < 0 || x > 22 || y < 0 || y > 12) {
+    return;
+  }  
+  int row = (12-y) * 23;
+	int row_x;
+	if (!(row%2)) {
+		row_x = row + (22-x);
+	}
+	else {
+		row_x = row + x;
+	}
+	leds[row_x] = color;
+}
+
+void drawLineY(int x,int y, int len, CRGB color, bool doubleScale = false) {
+  for (int i = 0; i < len; i ++) {
+    drawPixel(x, y+i, color, doubleScale);
+  }  
+}
+
+void drawLineX(int x,int y, int len, CRGB color, bool doubleScale = false) {
+  for (int i = 0; i < len; i ++) {
+    drawPixel(x+i, y, color, doubleScale);
+  }  
+}
+
+void drawCharacter(int x_start, int y_start, char letter, CRGB color, bool doubleScale = false) {
+  //drawPixel(x_start, y_start, CRGB::Yellow);
+  int index = char_to_index(letter);
+  for (int i = 0; i < 5; i++) {
+	for (int j = 0; j < 3; j++) {
+		//x_start +=j;
+//                if (pgm_read_byte_near(font + index*15 + i*3 + j)) {
+                if (pgm_read_byte_near(&font[index][i][j])) {
+                  drawPixel(x_start + j, y_start + i, color, doubleScale);
+                }
+                else {
+                    drawPixel(x_start + j, y_start + i, CRGB(0,0,0), doubleScale);
+
+                }
+                
+	}
+  }
+  
+}
+
+void drawString(int x, int y, const char * message, CRGB color, bool doubleScale = false) {
+  while (*message) {
+     drawCharacter(x,y,*message, color, doubleScale);
+     drawLineY(x + 3,y,5, CRGB::Black, doubleScale);
+     x += 4;
+     message++; 
+  }
+}
+
+
+
+
 #define PI 3.14159265
 #include <math.h>
 
@@ -151,6 +218,22 @@ void rainbowSeries(int ledNumbers) {
       Serial.print("\n");
    }
 }
+bool alternate = false;
+CRGB color (0,0,0);
+
 void loop() {
-   rainbowSeries(150);
+   //rainbowSeries(150);
+   FastLED.show();
+   CRGB color (CRGB::Yellow);
+   if (alternate) {
+     color = CRGB(0,0,255);
+   }
+ 
+   drawString(0,0,"830", color, true);
+   //drawString(0, 7, "BOTT", color);
+   Serial.print("something");
+
+   delay(250);
+   alternate = !alternate;
+
 }
