@@ -61,6 +61,7 @@
 // #define FASTLED_FORCE_SOFTWARE_PINS
 #include "FastLED.h"
 #include "font.h"
+#include "image-gen.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -234,15 +235,31 @@ bool alternate = false;
 CRGB color (0,0,0);
 
 void loop() {
+  
+  for (int x = 0; x < 23; x ++) {
+   for (int y = 0; y < 13; y++) {
+      CRGB color (pgm_read_byte_near(&pxl[x][y][0]), 
+                  pgm_read_byte_near(&pxl[x][y][1]),
+                  pgm_read_byte_near(&pxl[x][y][2])
+       );
+       Serial.print(pgm_read_byte_near(&pxl[x][y][0]));
+       Serial.print('\n');
+      //CRGB color(x*10,y*13,0);
+      drawPixel(x, y, color);
+    }
+ }
    //rainbowSeries(150);
    FastLED.show();
+   return;
    CRGB color (CRGB::Yellow);
    if (alternate) {
      color = CRGB(0,0,255);
    }
+   
+   
  
-   scrollMessage(0,"830 GO RATPACK!", color);
-   //drawString(0, 7, "BOTT", color);
+   scrollMessage(0,"JOHN IS NOT A QUACK", color, true);
+   //drawString(0, 0, "COLIN IS COOL", color);
    Serial.print("something");
 
    delay(250);
