@@ -236,21 +236,21 @@ CRGB color (0,0,0);
 
 void loop() {
   
-  for (int x = 0; x < 23; x ++) {
-   for (int y = 0; y < 13; y++) {
-      CRGB color (pgm_read_byte_near(&pxl[x][y][0]), 
-                  pgm_read_byte_near(&pxl[x][y][1]),
-                  pgm_read_byte_near(&pxl[x][y][2])
-       );
-       Serial.print(pgm_read_byte_near(&pxl[x][y][0]));
-       Serial.print('\n');
-      //CRGB color(x*10,y*13,0);
-      drawPixel(x, y, color);
-    }
- }
+//  for (int x = 0; x < 23; x ++) {
+//   for (int y = 0; y < 13; y++) {
+//      CRGB color (pgm_read_byte_near(&pxl[x][y][0]), 
+//                  pgm_read_byte_near(&pxl[x][y][1]),
+//                  pgm_read_byte_near(&pxl[x][y][2])
+//       );
+//       Serial.print(pgm_read_byte_near(&pxl[x][y][0]));
+//       Serial.print('\n');
+//      //CRGB color(x*10,y*13,0);
+//      drawPixel(x, y, color);
+//    }
+// }
    //rainbowSeries(150);
    FastLED.show();
-   return;
+   //return;
    CRGB color (CRGB::Yellow);
    if (alternate) {
      color = CRGB(0,0,255);
