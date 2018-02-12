@@ -1,3 +1,5 @@
+#include <Vector.h>
+
 #include <bitswap.h>
 #include <chipsets.h>
 #include <color.h>
@@ -62,6 +64,7 @@
 #include "FastLED.h"
 #include "font.h"
 #include "image-gen.h"
+#include <math.h>
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +95,7 @@ void setup() {
       // FastLED.addLeds<TM1809, DATA_PIN, RGB>(leds, NUM_LEDS);
 //      FastLED.addLeds<WS2811, DATA_PIN, RGB>(leds, NUM_LEDS);
       // FastLED.addLeds<WS2812, DATA_PIN, RGB>(leds, NUM_LEDS);
-      FastLED.addLeds<WS2812B, DATA_PIN, RGB>(leds, NUM_LEDS);
+      FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
       // FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
       // FastLED.addLeds<APA104, DATA_PIN>(leds, NUM_LEDS);
       // FastLED.addLeds<WS2811_400, DATA_PIN, RGB>(leds, NUM_LEDS);
@@ -151,10 +154,10 @@ void drawPixel(int x, int y, CRGB color, bool doubleScale = false) {
   int row = (12-y) * 23;
 	int row_x;
 	if (!(row%2)) {
-		row_x = row + (22-x);
+		row_x = row + x;
 	}
 	else {
-		row_x = row + x;
+		row_x = row + (22-x);
 	}
 	leds[row_x] = color;
 }
@@ -200,12 +203,8 @@ void drawString(int x, int y, const char * message, CRGB color, bool doubleScale
   }
 }
 
-void scrollMessage(int y, const char *message, CRGB color, bool doubleScale = false) {
-  Serial.print(-4*(int)strlen(message));
-  
+void scrollMessage(int y, const char *message, CRGB color, bool doubleScale = false) {  
   for (int x = 22; x > (-4 * (int)strlen(message)); x--) {
-    Serial.print(x);
-    Serial.print('\n');
     drawString(x, y, message, color, doubleScale);
     FastLED.show();
     delay(100);
@@ -231,38 +230,80 @@ void rainbowSeries(int ledNumbers) {
       Serial.print("\n");
    }
 }
+
+CRGB rainbowColor() {
+    const float pi = 3.141592;
+    static int x = 0;
+    double red = -(0.5 *(sin((pi/50)*x))) + 1;
+    double green = (0.5*(sin((pi/50)*x)) + (pi/3)) + 1;
+    double blue = (0.5 *(sin((pi/50)*x)) + ((5*pi)/3)) + 1;
+    x++;
+    CRGB color (red*255, green*255, blue*255);
+    return color;
+  }
+
+const char* black_list[] = {"LOSE", "SUCK", '\0'}; // nullptr error? 
+
+const char* blackList(const char* black_list_input[], const char* input) {
+  static int i = 0;
+  const char *output;
+  while (black_list_input[i]) {
+    if (black_list_input[i] == input) {
+      return "****";
+    }
+    i++;
+  }
+  return input;
+}
+
 bool alternate = false;
 CRGB color (0,0,0);
 
+char message[100] = "Go Ratpack!";
 void loop() {
   
-//  for (int x = 0; x < 23; x ++) {
-//   for (int y = 0; y < 13; y++) {
-//      CRGB color (pgm_read_byte_near(&pxl[x][y][0]), 
-//                  pgm_read_byte_near(&pxl[x][y][1]),
-//                  pgm_read_byte_near(&pxl[x][y][2])
-//       );
-//       Serial.print(pgm_read_byte_near(&pxl[x][y][0]));
-//       Serial.print('\n');
-//      //CRGB color(x*10,y*13,0);
-//      drawPixel(x, y, color);
-//    }
-// }
-   //rainbowSeries(150);
-   FastLED.show();
-   //return;
-   CRGB color (CRGB::Yellow);
-   if (alternate) {
-     color = CRGB(0,0,255);
-   }
+ //  for (int x = 0; x < 23; x ++) {
+ //   for (int y = 0; y < 13; y++) {
+ //      color = (pgm_read_byte_near(&pxl[x][y]));
+ //       Serial.print(pgm_read_byte_near(&pxl[x][y][0]));
+ //       Serial.print('\n');
+ //      //CRGB color(x*10,y*13,0);
+ //      drawPixel(x, y, color);
+ //    }
+ // }
+ //   //rainbowSeries(150);
+ //   FastLED.show();
+ //   return;
+ //   CRGB color (CRGB::Yellow);
+ //   if (alternate) {
+ //     color = CRGB(0,0,255);
+ //   }
    
    
- 
-   scrollMessage(0,"JOHN IS NOT A QUACK", color, true);
-   //drawString(0, 0, "COLIN IS COOL", color);
-   Serial.print("something");
+ //   scrollMessage(0,"THE QUICK BROWN FOX JUMPED OVER THE LAZY DOGS",color, true);
+ //   //drawString(0, 0, "COLIN IS COOL", color);
+ //   Serial.print("something");
 
-   delay(250);
-   alternate = !alternate;
+ //   delay(250);
+ //   alternate = !alternate;
+
+    if (Serial.available() > 0) {
+      int bytes_read = Serial.readBytesUntil('\n', message, 99);
+      message[bytes_read] = '\0';
+    } 
+      for (int i = 0; i < strlen(message); i++) {
+        message[i] = toupper(message[i]);
+      }
+
+    // color = rainbowColor();
+    color = 0xff8800; 
+    scrollMessage(0, message, color,true);
+
+
+
+      // for (int i = 0; i < NUM_LEDS; i++) {
+      //   leds[i] = CRGB(0,255,0);
+      // }
+      FastLED.show();
 
 }

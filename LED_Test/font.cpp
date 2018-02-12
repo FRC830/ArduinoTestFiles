@@ -40,6 +40,7 @@ unsigned char_to_index(char c) {
     case '8': return 35; break;
     case '9': return 36; break;
     case '!': return 37; break;
+    case '*': return 38; break;
     default: return 0; break;
   }
 }
@@ -82,6 +83,7 @@ const bool font[][5][3] PROGMEM = {
   {1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1}, // 8
   {1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1}, // 9
   {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0}, // !
+  {0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0}, // *
 };
 /*
 .:
@@ -350,5 +352,11 @@ XXX
    
  X 
  
-*/
+*:
+   
+ X 
+XXX
+ X 
+   
  
+*/
