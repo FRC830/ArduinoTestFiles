@@ -178,20 +178,18 @@ void drawCharacter(int x_start, int y_start, char letter, CRGB color, bool doubl
   //drawPixel(x_start, y_start, CRGB::Yellow);
   int index = char_to_index(letter);
   for (int i = 0; i < 5; i++) {
-	for (int j = 0; j < 3; j++) {
+	 for (int j = 0; j < 3; j++) {
 		//x_start +=j;
 //                if (pgm_read_byte_near(font + index*15 + i*3 + j)) {
-                if (pgm_read_byte_near(&font[index][i][j])) {
-                  drawPixel(x_start + j, y_start + i, color, doubleScale);
-                }
-                else {
-                    drawPixel(x_start + j, y_start + i, CRGB(0,0,0), doubleScale);
+    if (pgm_read_byte_near(&font[index][i][j])) {
+      drawPixel(x_start + j, y_start + i, color, doubleScale);
+    }
+    else {
+        drawPixel(x_start + j, y_start + i, CRGB(0,0,0), doubleScale);
 
-                }
-                
-	}
+    }            
+	 }
   }
-  
 }
 
 void drawString(int x, int y, const char * message, CRGB color, bool doubleScale = false) {
@@ -234,32 +232,26 @@ void rainbowSeries(int ledNumbers) {
 CRGB rainbowColor() {
     const float pi = 3.141592;
     static int x = 0;
-    double red = -(0.5 *(sin((pi/50)*x))) + 1;
-    double green = (0.5*(sin((pi/50)*x)) + (pi/3)) + 1;
-    double blue = (0.5 *(sin((pi/50)*x)) + ((5*pi)/3)) + 1;
+    double red = -(0.5 *(sin((pi/5)*x))) + 1;
+    double green = (0.5*(sin((pi/5)*x)) + (pi/3)) + 1;
+    double blue = (0.5 *(sin((pi/5)*x)) + ((5*pi)/3)) + 1;
     x++;
     CRGB color (red*255, green*255, blue*255);
     return color;
   }
 
-const char* black_list[] = {"LOSE", "SUCK", '\0'}; // nullptr error? 
-
-const char* blackList(const char* black_list_input[], const char* input) {
-  static int i = 0;
-  const char *output;
-  while (black_list_input[i]) {
-    if (black_list_input[i] == input) {
-      return "****";
-    }
-    i++;
-  }
-  return input;
-}
-
 bool alternate = false;
 CRGB color (0,0,0);
 
 char message[100] = "Go Ratpack!";
+char* black_list [] = {"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", "ASS", "DICK", 
+  "NUDES", "NUDE", "NOODS", "NOOD", "NOODES", "COCK", "BITCH", "FAGGOT", "GIL", "SEX", 
+  "BOOB", "PENIS", "VAGINA", "PUSSY", "PU$$Y", "N00D", "N00DS", "WHORE", "SLUT", "DYKE", "NIBBA"
+  "SHREK", "SHREKT", "SHREKED", "BASTARD", "PISS", "SUCK", "SUCC", "SUC", "DAMN", "TWAT"
+  "ARSE", "ASSHOLE", "JERRY", "JESUS", "HELL", "BBC", "MILF", "GODDAMN", "BALLS", "BUTT", 
+  "SHITTY", "KKK", "NUTS", "FUCKING", "GAY", "TRIGGERED", "STRIP", "STRIPPER", "PROSTITUTE"
+  "PORN",   '\0'};
+
 void loop() {
   
  //  for (int x = 0; x < 23; x ++) {
@@ -280,30 +272,65 @@ void loop() {
  //   }
    
    
- //   scrollMessage(0,"THE QUICK BROWN FOX JUMPED OVER THE LAZY DOGS",color, true);
- //   //drawString(0, 0, "COLIN IS COOL", color);
- //   Serial.print("something");
+   // scrollMessage(0,"THE QUICK BROWN FOX JUMPED OVER THE LAZY DOGS",color, true);
+   // //drawString(0, 0, "COLIN IS COOL", color);
+   // Serial.print("something");
 
- //   delay(250);
- //   alternate = !alternate;
+   // delay(250);
+   // alternate = !alternate;
 
     if (Serial.available() > 0) {
       int bytes_read = Serial.readBytesUntil('\n', message, 99);
       message[bytes_read] = '\0';
     } 
-      for (int i = 0; i < strlen(message); i++) {
-        message[i] = toupper(message[i]);
+    for (int i = 0; i < strlen(message); i++) {
+      message[i] = toupper(message[i]);
+    }
+
+    //blacklist
+    char output[sizeof(message)/sizeof(*message)];
+      for (int k = 0; k < sizeof(message)/sizeof(*message); k++) {
+        if (output[k]) {
+          output[k] = '\0';
+        }
       }
+      char *split_input = strtok(message, " ,.!");
+      while (split_input != NULL) {
+        //check BL
+        int i = 0;
+        while (*(black_list + i)) {
+          if (!strcmp(*(black_list + i), split_input)) {
+            int j = 1;
+            while (*(split_input + j + 1)) {
+              *(split_input + j) = '*';
+              j++;
+            }
+          }
+          i++;
+        }
+    strcat(output,split_input );
+
+    char *space = " ";
+    strcat(output,space );
+
+    split_input = strtok(NULL, " ,.!");
+  }
+  strcpy(message, output);
 
     // color = rainbowColor();
-    color = 0xff8800; 
-    scrollMessage(0, message, color,true);
+  color = 0xff8800; 
+  scrollMessage(0, message, color,true);
 
 
 
-      // for (int i = 0; i < NUM_LEDS; i++) {
-      //   leds[i] = CRGB(0,255,0);
-      // }
-      FastLED.show();
+
+  Serial.print("something");
+
+
+
+    // for (int i = 0; i < NUM_LEDS; i++) {
+    //   leds[i] = CRGB(0,255,0);
+    // }
+    FastLED.show();
 
 }
