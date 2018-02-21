@@ -64,23 +64,23 @@ s = """
 90	132	5A	01011010	Z	&#90;	 	
 """
 
-cpp_array = """
-{"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", "ASS", "DICK", 
+cpp_array = """{"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", "ASS", "DICK", 
   "NUDES", "NUDE", "NOODS", "NOOD", "NOODES", "COCK", "BITCH", "FAGGOT", "GIL", "SEX", 
   "BOOB", "PENIS", "VAGINA", "PUSSY", "PU$$Y", "N00D", "N00DS", "WHORE", "SLUT", "DYKE", "NIBBA"
-  "SHREK", "SHREKT", "SHREKED", "BASTARD", "PISS", "SUCK", "SUCC", "SUC", "DAMN", "TWAT"
-  "ARSE", "ASSHOLE", "JERRY", "JESUS", "HELL", "BBC", "MILF", "GODDAMN", "BALLS", "BUTT", 
-  "SHITTY", "KKK", "NUTS", "FUCKING", "GAY", "TRIGGERED", "STRIP", "STRIPPER", "PROSTITUTE"
+  "SHREK", "SHREKT", "SHREKED", "BASTARD", "PISS", "SUCK", "SUCC", "SUC", "DAMN", "TWAT" 
+  "ARSE", "ASSHOLE", "JERRY", "JESUS", "HELL", "BBC", "MILF", "GODDAMN", "BALLS", "BUTT",
+  "SHITTY", "KKK", "NUTS", "FUCKING", "GAY", "TRIGGERED", "STRIP", "STRIPPER", "PROSTITUTE" 
   "PORN",   '\0'};
  """
 #test_list = ["YIKES", "BAD", "LOSE", "SOMETHING"]
 test_list = []
 for i in range(0,len(cpp_array)):
-	test_list = cpp_array.replace("{", "").replace("}","").replace(",","").replace('"',"")
-	test_list = test_list.split(' ')
-print (test_list, end="")	
+	test_list = cpp_array.replace("{", "").replace("}","").replace(",","").replace('"',"").replace("\n","")
+	test_list = filter(None, test_list.split(' '))
+print (test_list, end="")
+print (" ")	
 
-print ("black_list = {")
+print ("const char* black_list[] = {")
 for i in range (0,len(test_list)):
 	print ('"',end="")
  	for j in range(0, len(test_list[i])):
@@ -93,7 +93,8 @@ for i in range (0,len(test_list)):
 					str_new = []
 					str_new += test_list[i][j].replace(test_list[i][j], raw[2],1)
 					print ("\\x" +(('').join(str_new)) , end="")
-	print ('" ,')			
+	print ('" ,')
+print ("};")				
 
 						#print str(test_list[i])
 
