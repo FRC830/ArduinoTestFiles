@@ -76,7 +76,7 @@ cpp_array = """
 #test_list = ["YIKES", "BAD", "LOSE", "SOMETHING"]
 test_list = []
 for i in range(0,len(cpp_array)):
-	test_list = cpp_array.replace("{", "").replace("}","").replace(",","")
+	test_list = cpp_array.replace("{", "").replace("}","").replace(",","").replace('"',"")
 	test_list = test_list.split(' ')
 print (test_list, end="")	
 
