@@ -1,32 +1,4 @@
-#include <Vector.h>
-
-#include <bitswap.h>
-#include <chipsets.h>
-#include <color.h>
-#include <colorpalettes.h>
-#include <colorutils.h>
-#include <controller.h>
-#include <cpp_compat.h>
-#include <dmx.h>
-#include <FastLED.h>
-#include <fastled_config.h>
-#include <fastled_delay.h>
-#include <fastled_progmem.h>
-#include <fastpin.h>
-#include <fastspi.h>
-#include <fastspi_bitbang.h>
-#include <fastspi_dma.h>
-#include <fastspi_nop.h>
-#include <fastspi_ref.h>
-#include <fastspi_types.h>
-#include <hsv2rgb.h>
-#include <led_sysdefs.h>
-#include <lib8tion.h>
-#include <noise.h>
-#include <pixelset.h>
-#include <pixeltypes.h>
-#include <platforms.h>
-#include <power_mgt.h>
+#define FASTLED_INTERNAL
 
 #include <bitswap.h>
 #include <chipsets.h>
@@ -202,7 +174,7 @@ void drawString(int x, int y, const char * message, CRGB color, bool doubleScale
 }
 
 void scrollMessage(int y, const char *message, CRGB color, bool doubleScale = false) {  
-  for (int x = 22; x > (-4 * (int)strlen(message)); x--) {
+  for (int x = 22 - 11*doubleScale; x > (-4 * (int)strlen(message)); x--) {
     drawString(x, y, message, color, doubleScale);
     FastLED.show();
     delay(100);
@@ -212,7 +184,7 @@ void scrollMessage(int y, const char *message, CRGB color, bool doubleScale = fa
 
 
 
-#define PI 3.14159265
+//#define PI 3.14159265
 #include <math.h>
 
 void rainbowSeries(int ledNumbers) {
@@ -244,13 +216,13 @@ bool alternate = false;
 CRGB color (0,0,0);
 
 char message[100] = "Go Ratpack!";
-char* black_list [] = {"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", "ASS", "DICK", 
+const char* black_list [] = {"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", "ASS", "DICK", 
   "NUDES", "NUDE", "NOODS", "NOOD", "NOODES", "COCK", "BITCH", "FAGGOT", "GIL", "SEX", 
   "BOOB", "PENIS", "VAGINA", "PUSSY", "PU$$Y", "N00D", "N00DS", "WHORE", "SLUT", "DYKE", "NIBBA"
   "SHREK", "SHREKT", "SHREKED", "BASTARD", "PISS", "SUCK", "SUCC", "SUC", "DAMN", "TWAT"
   "ARSE", "ASSHOLE", "JERRY", "JESUS", "HELL", "BBC", "MILF", "GODDAMN", "BALLS", "BUTT", 
   "SHITTY", "KKK", "NUTS", "FUCKING", "GAY", "TRIGGERED", "STRIP", "STRIPPER", "PROSTITUTE"
-  "PORN",   '\0'};
+  "PORN",   NULL};
 
 void loop() {
   
@@ -296,25 +268,25 @@ void loop() {
       }
       char *split_input = strtok(message, " ,.!");
       while (split_input != NULL) {
-        //check BL
-        int i = 0;
-        while (*(black_list + i)) {
-          if (!strcmp(*(black_list + i), split_input)) {
-            int j = 1;
-            while (*(split_input + j + 1)) {
-              *(split_input + j) = '*';
-              j++;
+          //check BL
+          int i = 0;
+          while (*(black_list + i)) {
+            if (!strcmp(*(black_list + i), split_input)) {
+              int j = 1;
+              while (*(split_input + j + 1)) {
+                *(split_input + j) = '*';
+                j++;
+              }
             }
+            i++;
           }
-          i++;
-        }
-    strcat(output,split_input );
-
-    char *space = " ";
-    strcat(output,space );
-
-    split_input = strtok(NULL, " ,.!");
-  }
+      strcat(output,split_input );
+  
+      const char *space = " ";
+      strcat(output,space );
+  
+      split_input = strtok(NULL, " ,.!");
+    }
   strcpy(message, output);
 
     // color = rainbowColor();
