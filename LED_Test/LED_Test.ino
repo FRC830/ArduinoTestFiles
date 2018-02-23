@@ -178,10 +178,17 @@ void scrollMessage(int y, const char *message, CRGB color, bool doubleScale = fa
     drawString(x, y, message, color, doubleScale);
     FastLED.show();
     delay(100);
+    if (Serial.available() > 0){
+      return;
+    }
   }
 }
 
-
+void clearSign(){
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = 0;
+  }
+}
 
 
 //#define PI 3.14159265
@@ -213,10 +220,11 @@ CRGB rainbowColor() {
   }
 
 bool alternate = false;
-CRGB color (0,0,0);
+bool textSize = true;
+CRGB color = 0xff8800;
 
-char message[100] = "Go Ratpack!";
-const char* black_list [] = {"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", "ASS", "DICK", 
+char message[100] = "GO RATPACK!";
+const char* const black_list [] = {"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", "ASS", "DICK", 
   "NUDES", "NUDE", "NOODS", "NOOD", "NOODES", "COCK", "BITCH", "FAGGOT", "GIL", "SEX", 
   "BOOB", "PENIS", "VAGINA", "PUSSY", "PU$$Y", "N00D", "N00DS", "WHORE", "SLUT", "DYKE", "NIBBA"
   "SHREK", "SHREKT", "SHREKED", "BASTARD", "PISS", "SUCK", "SUCC", "SUC", "DAMN", "TWAT"
@@ -225,7 +233,7 @@ const char* black_list [] = {"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", 
   "PORN",   NULL};
 
 void loop() {
-  
+     clearSign();
  //  for (int x = 0; x < 23; x ++) {
  //   for (int y = 0; y < 13; y++) {
  //      color = (pgm_read_byte_near(&pxl[x][y]));
@@ -252,11 +260,29 @@ void loop() {
    // alternate = !alternate;
 
     if (Serial.available() > 0) {
-      int bytes_read = Serial.readBytesUntil('\n', message, 99);
-      message[bytes_read] = '\0';
-    } 
-    for (int i = 0; i < strlen(message); i++) {
-      message[i] = toupper(message[i]);
+      char temp[100];
+      int bytes_read = Serial.readBytesUntil('\n', temp, 99);
+      temp[bytes_read] = '\0';
+      if (temp[0] == '#') {
+        color = strtol(temp+1, NULL, 16);
+        Serial.print("new color:");
+        Serial.print(temp+1);
+        Serial.print("\n");
+        Serial.print(strtol(temp+1, NULL, 16));
+        Serial.print("\nred:");
+        Serial.print(color.red);
+        Serial.print("\ngreen:");
+        Serial.print(color.green);
+        Serial.print("\nblue:");
+        Serial.print(color.blue);
+        Serial.print("\n");
+      } else if(temp[0] == '+'){
+        textSize = !textSize;
+      }else {
+        for (int i = 0; i <= strlen(temp); i++) {
+         message[i] = toupper(temp[i]);
+        }
+      }
     }
 
     //blacklist
@@ -266,7 +292,7 @@ void loop() {
           output[k] = '\0';
         }
       }
-      char *split_input = strtok(message, " ,.!");
+      char *split_input = strtok(message, " ");
       while (split_input != NULL) {
           //check BL
           int i = 0;
@@ -285,18 +311,14 @@ void loop() {
       const char *space = " ";
       strcat(output,space );
   
-      split_input = strtok(NULL, " ,.!");
+      split_input = strtok(NULL, " ");
     }
   strcpy(message, output);
 
-    // color = rainbowColor();
-  color = 0xff8800; 
-  scrollMessage(0, message, color,true);
-
-
-
-
-  Serial.print("something");
+    // color = rainbowColor(); 
+  Serial.print(message);
+  Serial.print("\n");
+  scrollMessage(0, message, color, textSize);
 
 
 
