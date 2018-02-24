@@ -39,7 +39,7 @@
 #include <math.h>
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
+///
 //
 // Move a white dot along the strip of leds.  This program simply shows how to configure the leds,
 // and then how to turn a single pixel white and then off, moving down the line of pixels.
@@ -224,13 +224,74 @@ bool textSize = true;
 CRGB color = 0xff8800;
 
 char message[100] = "GO RATPACK!";
-const char* const black_list [] = {"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", "ASS", "DICK", 
+/*const char* const black_list [] = {"SHIT", "FUCK", "CUNT", "CUCK", "NIGGER", "NIGGA", "ASS", "DICK", 
   "NUDES", "NUDE", "NOODS", "NOOD", "NOODES", "COCK", "BITCH", "FAGGOT", "GIL", "SEX", 
   "BOOB", "PENIS", "VAGINA", "PUSSY", "PU$$Y", "N00D", "N00DS", "WHORE", "SLUT", "DYKE", "NIBBA"
   "SHREK", "SHREKT", "SHREKED", "BASTARD", "PISS", "SUCK", "SUCC", "SUC", "DAMN", "TWAT"
   "ARSE", "ASSHOLE", "JERRY", "JESUS", "HELL", "BBC", "MILF", "GODDAMN", "BALLS", "BUTT", 
-  "SHITTY", "KKK", "NUTS", "FUCKING", "GAY", "TRIGGERED", "STRIP", "STRIPPER", "PROSTITUTE"
-  "PORN",   NULL};
+  "SHITTY", "KKK", "NUTS", "FUCKING", "GAY", "TRIGGERED", "STRIP", "STRIPPER", "PROSTITUTE",
+  "PORN",   NULL}; */
+
+
+const char s0[] PROGMEM = "SHIT";
+const char s1[] PROGMEM =  "FUCK";
+const char s2[] PROGMEM =  "CUNT";
+const char s3[] PROGMEM =  "CUCK";
+const char s4[] PROGMEM =  "NIGGER";
+const char s5[] PROGMEM =  "NIGGA";
+const char s6[] PROGMEM =  "ASS";
+const char s7[] PROGMEM =  "DICK";
+const char s8[] PROGMEM =    "NUDES";
+const char s9[] PROGMEM =  "NUDE";
+const char s10[] PROGMEM =  "NOODS";
+const char s11[] PROGMEM =  "NOOD";
+const char s12[] PROGMEM =  "NOODES";
+const char s13[] PROGMEM =  "COCK";
+const char s14[] PROGMEM =  "BITCH";
+const char s15[] PROGMEM =  "FAGGOT";
+const char s16[] PROGMEM =  "GIL";
+const char s17[] PROGMEM =  "SEX";
+const char s18[] PROGMEM =    "BOOB";
+const char s19[] PROGMEM =  "PENIS";
+const char s20[] PROGMEM =  "VAGINA";
+const char s21[] PROGMEM =  "PUSSY";
+const char s22[] PROGMEM =  "PU$$Y";
+const char s23[] PROGMEM =  "N00D";
+const char s24[] PROGMEM =  "N00DS";
+const char s25[] PROGMEM =  "WHORE";
+const char s26[] PROGMEM =  "SLUT";
+const char s27[] PROGMEM =  "DYKE";
+const char s28[] PROGMEM =  "NIBBA"  "SHREK";
+const char s29[] PROGMEM =  "SHREKT";
+const char s30[] PROGMEM =  "SHREKED";
+const char s31[] PROGMEM =  "BASTARD";
+const char s32[] PROGMEM =  "PISS";
+const char s33[] PROGMEM =  "SUCK";
+const char s34[] PROGMEM =  "SUCC";
+const char s35[] PROGMEM =  "SUC";
+const char s36[] PROGMEM =  "DAMN";
+const char s37[] PROGMEM =  "TWAT"  "ARSE";
+const char s38[] PROGMEM =  "ASSHOLE";
+const char s39[] PROGMEM =  "JERRY";
+const char s40[] PROGMEM =  "JESUS";
+const char s41[] PROGMEM =  "HELL";
+const char s42[] PROGMEM =  "BBC";
+const char s43[] PROGMEM =  "MILF";
+const char s44[] PROGMEM =  "GODDAMN";
+const char s45[] PROGMEM =  "BALLS";
+const char s46[] PROGMEM =  "BUTT";
+const char s47[] PROGMEM =    "SHITTY";
+const char s48[] PROGMEM =  "KKK";
+const char s49[] PROGMEM =  "NUTS";
+const char s50[] PROGMEM =  "FUCKING";
+const char s51[] PROGMEM =  "GAY";
+const char s52[] PROGMEM =  "TRIGGERED";
+const char s53[] PROGMEM =  "STRIP";
+const char s54[] PROGMEM =  "STRIPPER";
+const char s55[] PROGMEM =  "PROSTITUTE";
+const char s56[] PROGMEM =   "PORN";
+const char* const black_list[] PROGMEM = {s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15,s16,s17,s18,s19,s20,s21,s22,s23,s24,s25,s26,s27,s28,s29,s30,s31,s32,s33,s34,s35,s36,s37,s38,s39,s40,s41,s42,s43,s44,s45,s46,s47,s48,s49,s50,s51,s52,s53,s54,s55,s56,'\0'};
+char buffer[99];
 
 void loop() {
      clearSign();
@@ -284,7 +345,7 @@ void loop() {
         }
       }
     }
-
+   
     //blacklist
     char output[sizeof(message)/sizeof(*message)];
       for (int k = 0; k < sizeof(message)/sizeof(*message); k++) {
@@ -295,16 +356,18 @@ void loop() {
       char *split_input = strtok(message, " ");
       while (split_input != NULL) {
           //check BL
-          int i = 0;
-          while (*(black_list + i)) {
-            if (!strcmp(*(black_list + i), split_input)) {
+         for (int i = 0; i < sizeof(black_list)/sizeof(*black_list)-1; i++) {
+          strcpy_P(buffer, (char*)pgm_read_word(&(black_list[i])));
+            if (!strcmp((buffer), split_input)) {
               int j = 1;
               while (*(split_input + j + 1)) {
                 *(split_input + j) = '*';
                 j++;
               }
             }
-            i++;
+            for (int l = 0; l <= 99; l++){
+              buffer[l] = NULL;
+            }
           }
       strcat(output,split_input );
   
@@ -318,7 +381,7 @@ void loop() {
     // color = rainbowColor(); 
   Serial.print(message);
   Serial.print("\n");
-  scrollMessage(0, message, color, textSize);
+  scrollMessage(1, message, color, textSize);
 
 
 
